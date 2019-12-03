@@ -12,11 +12,12 @@
     <artifactId>gmall-pms</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>gmall-pms</name>
-    <description>Demo project for Spring Boot</description>
+    <description>商品管理系统</description>
 
     <properties>
         <java.version>1.8</java.version>
         <spring-cloud.version>Hoxton.RELEASE</spring-cloud.version>
+        <mysql.version>5.1.46</mysql.version>
     </properties>
 
     <dependencies>
