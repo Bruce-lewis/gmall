@@ -7,9 +7,12 @@ import java.util.Map;
 import com.atguigu.core.bean.PageVo;
 import com.atguigu.core.bean.QueryCondition;
 import com.atguigu.core.bean.Resp;
+import com.atguigu.gmall.pms.vo.SpuInfoVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,9 +32,17 @@ import com.atguigu.gmall.pms.service.SpuInfoService;
 @Api(tags = "spu信息 管理")
 @RestController
 @RequestMapping("pms/spuinfo")
+@Slf4j
 public class SpuInfoController {
     @Autowired
     private SpuInfoService spuInfoService;
+
+    @ApiOperation("spu商品信息查询")
+    @GetMapping
+    public Resp<PageVo> querySpuInfo(QueryCondition queryCondition,@RequestParam(value="catId",defaultValue="1") Long catId){
+        PageVo pageVo = this.spuInfoService.querySpuInfo(queryCondition,catId);
+        return Resp.ok(pageVo);
+    }
 
     /**
      * 列表
@@ -64,8 +75,9 @@ public class SpuInfoController {
     @ApiOperation("保存")
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('pms:spuinfo:save')")
-    public Resp<Object> save(@RequestBody SpuInfoEntity spuInfo){
-		spuInfoService.save(spuInfo);
+    public Resp<Object> save(@RequestBody SpuInfoVO spuInfoVO){
+		//spuInfoService.save(spuInfo);
+		spuInfoService.saveSpuInfoVO(spuInfoVO);
 
         return Resp.ok(null);
     }

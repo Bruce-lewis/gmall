@@ -1,12 +1,14 @@
 package com.atguigu.gmall.pms.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
 import com.atguigu.core.bean.PageVo;
 import com.atguigu.core.bean.QueryCondition;
 import com.atguigu.core.bean.Resp;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.atguigu.gmall.pms.entity.CategoryEntity;
 import com.atguigu.gmall.pms.service.CategoryService;
-
-
 
 
 /**
@@ -32,6 +32,26 @@ import com.atguigu.gmall.pms.service.CategoryService;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+    @ApiOperation("根据分类等级或者父id查询分类")
+    @GetMapping
+    public Resp<List<CategoryEntity>> queryCategory(
+            @RequestParam(value = "level", required = false, defaultValue = "0") Integer level,
+            @RequestParam(value = "parentCid", required = false) Long parentCid) {
+        // 构造查询条件
+        QueryWrapper<CategoryEntity> wrapper = new QueryWrapper<>();
+        // 如果level为0，说明查询所有的级别
+        if (level != 0) {
+            wrapper.eq("cat_level", level);
+        }
+        // 如果parentCid为null，说明用户没有传该字段，查询所有
+        if (parentCid != null) {
+            wrapper.eq("parent_cid", parentCid);
+        }
+
+        List<CategoryEntity> list = categoryService.list(wrapper);
+        return Resp.ok(list);
+    }
 
     /**
      * 列表
@@ -52,8 +72,8 @@ public class CategoryController {
     @ApiOperation("详情查询")
     @GetMapping("/info/{catId}")
     @PreAuthorize("hasAuthority('pms:category:info')")
-    public Resp<CategoryEntity> info(@PathVariable("catId") Long catId){
-		CategoryEntity category = categoryService.getById(catId);
+    public Resp<CategoryEntity> info(@PathVariable("catId") Long catId) {
+        CategoryEntity category = categoryService.getById(catId);
 
         return Resp.ok(category);
     }
@@ -64,8 +84,8 @@ public class CategoryController {
     @ApiOperation("保存")
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('pms:category:save')")
-    public Resp<Object> save(@RequestBody CategoryEntity category){
-		categoryService.save(category);
+    public Resp<Object> save(@RequestBody CategoryEntity category) {
+        categoryService.save(category);
 
         return Resp.ok(null);
     }
@@ -76,8 +96,8 @@ public class CategoryController {
     @ApiOperation("修改")
     @PostMapping("/update")
     @PreAuthorize("hasAuthority('pms:category:update')")
-    public Resp<Object> update(@RequestBody CategoryEntity category){
-		categoryService.updateById(category);
+    public Resp<Object> update(@RequestBody CategoryEntity category) {
+        categoryService.updateById(category);
 
         return Resp.ok(null);
     }
@@ -88,8 +108,8 @@ public class CategoryController {
     @ApiOperation("删除")
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('pms:category:delete')")
-    public Resp<Object> delete(@RequestBody Long[] catIds){
-		categoryService.removeByIds(Arrays.asList(catIds));
+    public Resp<Object> delete(@RequestBody Long[] catIds) {
+        categoryService.removeByIds(Arrays.asList(catIds));
 
         return Resp.ok(null);
     }
